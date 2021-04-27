@@ -1,3 +1,5 @@
 FROM opensuse/leap
-RUN zypper update && zypper install -y python3 python3-pip which && ln -s /usr/bin/python3 /usr/bin/python
+RUN zypper update -y && zypper install -y python3 python3-pip which && ln -s /usr/bin/python3 /usr/bin/python
 RUN mkdir /home/app/
+WORKDIR /home/app/db
+
