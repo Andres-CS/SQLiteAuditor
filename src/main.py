@@ -1,42 +1,22 @@
-import sqlite3
+import sqlite3, threading, time
 
-import threading, time
+from getinfo import *
 
+#TIME SCRIPT START 
 start = time.time()
 
-def tableinfo(dbname, results):
-    
-    tmp_start = time.time()
-    #print(tmp_start)
+# ------- INIT CONFIG -------
 
-    name = threading.current_thread().name
-    msg = "GOING TO QUERY DB: "+dbname
-    print(msg)
-
-    conn = sqlite3.connect(dbname)
-    crs = conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
-    tables = [
-        v[0] for v in crs.fetchall()
-        if v[0]  != 'sqlite_sequence'
-    ]
-    crs.close()
-    results.append(tables) #HOLDS TABLE INFO
-    
-    tmp_end = time.time()
-    #print(tmp_end)
-    diff_temp = tmp_end - tmp_start
-    tmp_msg = "Elapsed Time: "+str(diff_temp)
-    print(tmp_msg)
-    #return tables
-
-n_threads = 2
-dbpahts=['/home/app/db/newACCS.db','/home/app/db/oldACCS.db']
+num_threads = 2
+dbpahts=['/home/app/db/test/newACCS.db','/home/app/db/test/testACCS.db']
 running_threads = list()
 ts = list() #HOLDS TABLE INFO
 
-for i in range(n_threads):
+# ---------------------------
+
+for i in range(num_threads):
     name_th = "Thread_"+str(i)
-    thread = threading.Thread(target=tableinfo, name=name_th, args=(dbpahts[i],ts))
+    thread = threading.Thread(target=modtime, name=name_th, args=(dbpahts[i],ts))
     running_threads.append(thread)
     thread.start()
 
@@ -44,16 +24,13 @@ for i in range(n_threads):
 for thrd in running_threads:
     thrd.join()
 
-#conn1 = sqlite3.connect('/home/app/db/newACCS.db')
-#conn2 = sqlite3.connect('/home/app/db/oldACCS.db')
 
-#t1 = tableinfo(conn1)
-#t2 = tableinfo(conn2)
-
+#TIME SCRIPT ENDS
 end = time.time() - start
 
 print(ts)
 
+print()
 if ts[0] == ts[1]:
     print("SAME")
 else:
